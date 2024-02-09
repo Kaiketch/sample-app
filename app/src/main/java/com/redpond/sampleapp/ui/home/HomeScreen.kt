@@ -13,10 +13,19 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import com.redpond.sampleapp.ui.component.ObserveLifecycleEvent
 
 @Composable
-fun HomeRoute() {
+fun HomeRoute(
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    ObserveLifecycleEvent() {
+        if (it == Lifecycle.Event.ON_START) {
+            viewModel.onStart()
+        }
+    }
     HomeScreen()
 }
 
@@ -46,10 +55,4 @@ fun HomeTopBar() {
         ),
         title = { Text(text = "Home") }
     )
-}
-
-@Preview
-@Composable
-fun HomePreview() {
-    HomeScreen()
 }

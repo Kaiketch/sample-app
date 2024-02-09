@@ -12,15 +12,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.redpond.sampleapp.ui.home.HomeRoute
-import com.redpond.sampleapp.ui.home.HomeScreen
 import com.redpond.sampleapp.ui.settings.SettingsRoute
-import com.redpond.sampleapp.ui.settings.SettingsScreen
 
 const val MAIN_GRAPH_ROUTE = "main_graph"
 const val HOME_ROUTE = "home"
@@ -82,10 +79,4 @@ fun BottomNavigation(
             icon = { Icon(Icons.Default.Settings, SETTINGS_ROUTE) }
         )
     }
-}
-
-@Preview
-@Composable
-fun MainPreview() {
-    MainScreen(navController = rememberNavController())
 }

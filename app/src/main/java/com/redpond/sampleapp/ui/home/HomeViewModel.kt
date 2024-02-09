@@ -12,7 +12,7 @@ class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    init {
+    fun onStart() {
         viewModelScope.launch {
             userRepository.getUsers(10, 0, "UTzPH0ckXUPqj4QTCiZG5SLZO52K1KNI", 2, 1)
         }
