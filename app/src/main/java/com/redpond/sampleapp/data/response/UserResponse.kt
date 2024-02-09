@@ -1,7 +1,11 @@
 package com.redpond.sampleapp.data.response
 
+data class UserDataResponse(
+    val memberData: List<UserResponse>,
+)
+
 data class UserResponse(
-    val id: Int,
-    val name: String,
-    val imageUrl: String,
+    val memberId: Int,
+    val memberName: String,
+    val iconPath: String,
 )

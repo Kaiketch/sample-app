@@ -23,7 +23,7 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit() =
+    fun provideRetrofit(): Retrofit =
         Retrofit.Builder()
             .baseUrl("https://www.derby-friends.com")
             .client(client)
@@ -32,5 +32,5 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun prrovideUserApi(retrofit: Retrofit) = retrofit.create(UserApi::class.java)
+    fun provideUserApi(retrofit: Retrofit): UserApi = retrofit.create(UserApi::class.java)
 }

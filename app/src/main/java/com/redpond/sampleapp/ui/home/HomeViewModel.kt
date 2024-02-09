@@ -14,7 +14,16 @@ class HomeViewModel @Inject constructor(
 
     fun onStart() {
         viewModelScope.launch {
-            userRepository.getUsers(10, 0, "UTzPH0ckXUPqj4QTCiZG5SLZO52K1KNI", 2, 1)
+            runCatching {
+                userRepository.getUsers(10, 0, "UTzPH0ckXUPqj4QTCiZG5SLZO52K1KNI", 2, 1)
+            }.onSuccess {
+                val users = it.memberData
+                val user = users[0]
+                val id = user.memberId
+            }.onFailure {
+                // TODO
+
+            }
         }
     }
 }

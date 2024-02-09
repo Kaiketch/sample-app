@@ -1,5 +1,6 @@
 package com.redpond.sampleapp.data.api
 
+import com.redpond.sampleapp.data.response.UserDataResponse
 import com.redpond.sampleapp.data.response.UserResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -13,5 +14,5 @@ interface UserApi {
         @Query("access_token") accessToken: String,
         @Query("condition_code") conditionCode: Int,
         @Query("sort_type") sortType: Int,
-    ): List<UserResponse>
+    ): UserDataResponse
 }
