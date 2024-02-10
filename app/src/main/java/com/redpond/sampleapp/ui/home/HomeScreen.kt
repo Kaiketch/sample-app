@@ -12,47 +12,74 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import com.redpond.sampleapp.ui.component.ObserveLifecycleEvent
 
 @Composable
-fun HomeRoute(
+fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    ObserveLifecycleEvent() {
+    val uiState by viewModel.uiState.collectAsState()
+    ObserveLifecycleEvent {
         if (it == Lifecycle.Event.ON_START) {
             viewModel.onStart()
         }
     }
-    HomeScreen()
+    HomeContent(
+        uiState = uiState
+    )
 }
 
 @Composable
-fun HomeScreen() {
-    Scaffold(
-        topBar = { HomeTopBar() }
-    ) { paddingValue ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValue)
-                .fillMaxSize()
-        ) {
-            Text(text = "Hello, World!")
+fun HomeContent(
+    uiState: HomeViewModel.UiState
+) {
+    Scaffold(topBar = { HomeTopBar() }) { paddingValue ->
+        when (uiState) {
+            is HomeViewModel.UiState.Loading -> {
+                Text(text = "Loading...")
+            }
+
+            is HomeViewModel.UiState.Success -> {
+                HomeSuccessContent(
+                    modifier = Modifier
+                        .padding(paddingValue)
+                        .fillMaxSize(),
+                    uiState = uiState
+                )
+            }
+
+            is HomeViewModel.UiState.Error -> {
+                Text(text = "Error")
+            }
         }
     }
 }
 
 @Composable
 fun HomeTopBar() {
-    TopAppBar(
-        colors = topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onSecondary
-        ),
-        title = { Text(text = "Home") }
-    )
+    TopAppBar(colors = topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+        actionIconContentColor = MaterialTheme.colorScheme.onSecondary
+    ), title = { Text(text = "Home") })
+}
+
+@Composable
+fun HomeSuccessContent(
+    modifier: Modifier = Modifier,
+    uiState: HomeViewModel.UiState.Success
+) {
+    Column(
+        modifier = modifier
+    ) {
+        uiState.users.forEach {
+            Text(text = it.name)
+        }
+    }
 }

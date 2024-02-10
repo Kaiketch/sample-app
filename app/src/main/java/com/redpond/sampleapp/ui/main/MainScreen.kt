@@ -16,8 +16,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.redpond.sampleapp.ui.home.HomeRoute
-import com.redpond.sampleapp.ui.settings.SettingsRoute
+import com.redpond.sampleapp.ui.home.HomeScreen
+import com.redpond.sampleapp.ui.settings.SettingsScreen
 
 const val MAIN_GRAPH_ROUTE = "main_graph"
 const val HOME_ROUTE = "home"
@@ -51,10 +51,10 @@ fun MainScreen(
             startDestination = HOME_ROUTE
         ) {
             composable(HOME_ROUTE) {
-                HomeRoute()
+                HomeScreen()
             }
             composable(SETTINGS_ROUTE) {
-                SettingsRoute()
+                SettingsScreen()
             }
         }
     }
