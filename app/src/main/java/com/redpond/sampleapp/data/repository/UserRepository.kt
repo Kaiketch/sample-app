@@ -1,6 +1,7 @@
 package com.redpond.sampleapp.data.repository
 
 import com.redpond.sampleapp.data.api.UserApi
+import com.redpond.sampleapp.data.response.toUser
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,5 +15,11 @@ class UserRepository @Inject constructor(
         accessToken: String,
         conditionCode: Int,
         sortType: Int
-    ) = userApi.fetchUsers(limit, offset, accessToken, conditionCode, sortType)
+    ) = userApi.fetchUsers(
+        limit,
+        offset,
+        accessToken,
+        conditionCode,
+        sortType
+    ).memberData.map { it.toUser() }
 }
