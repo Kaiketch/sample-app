@@ -7,6 +7,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -46,13 +47,25 @@ class HomeViewModelTest {
             }
         }
         val viewModel = HomeViewModel(userRepository)
-        val expected = HomeViewModel.UiState.Success(listOf(User(1, "name", "iconPath")))
+        val result = mutableListOf<HomeViewModel.UiState>()
 
         // When
-        viewModel.onStart()
+        val job = launch(UnconfinedTestDispatcher()) {
+            viewModel.uiState.collect {
+                result.add(it)
+            }
+        }
+        job.cancel()
 
         // Then
-        assertEquals(expected, viewModel.uiState.value)
+        assertEquals(
+            HomeViewModel.UiState.Loading,
+            result[0]
+        )
+        assertEquals(
+            HomeViewModel.UiState.Success(listOf(User(1, "name", "iconPath"))),
+            result[1]
+        )
     }
 
     @Test
@@ -64,12 +77,24 @@ class HomeViewModelTest {
             }
         }
         val viewModel = HomeViewModel(userRepository)
-        val expected = HomeViewModel.UiState.Error("An unexpected error occurred")
+        val result = mutableListOf<HomeViewModel.UiState>()
 
         // When
-        viewModel.onStart()
+        val job = launch(UnconfinedTestDispatcher()) {
+            viewModel.uiState.collect {
+                result.add(it)
+            }
+        }
+        job.cancel()
 
         // Then
-        assertEquals(expected, viewModel.uiState.value)
+        assertEquals(
+            HomeViewModel.UiState.Loading,
+            result[0]
+        )
+        assertEquals(
+            HomeViewModel.UiState.Error("An unexpected error occurred"),
+            result[1]
+        )
     }
 }
