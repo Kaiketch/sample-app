@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,6 +31,7 @@ import androidx.lifecycle.Lifecycle
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.redpond.sampleapp.domain.model.User
 import com.redpond.sampleapp.ui.component.ObserveLifecycleEvent
 
 @Composable
@@ -54,7 +56,7 @@ fun HomeContent(
     Scaffold(topBar = { HomeTopBar() }) { paddingValue ->
         when (uiState) {
             is HomeViewModel.UiState.Loading -> {
-                Text(text = "Loading...")
+                HomeLoadingContent()
             }
 
             is HomeViewModel.UiState.Success -> {
@@ -67,7 +69,7 @@ fun HomeContent(
             }
 
             is HomeViewModel.UiState.Error -> {
-                Text(text = "Error")
+                HomeErrorContent(uiState = uiState)
             }
         }
     }
@@ -84,6 +86,22 @@ fun HomeTopBar() {
 }
 
 @Composable
+fun HomeLoadingContent() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+fun HomeErrorContent(
+    uiState: HomeViewModel.UiState.Error
+) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = uiState.message);
+    }
+}
+
+@Composable
 fun HomeSuccessContent(
     modifier: Modifier = Modifier,
     uiState: HomeViewModel.UiState.Success
@@ -94,23 +112,31 @@ fun HomeSuccessContent(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(uiState.users) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                Image(
-                    modifier = Modifier.fillMaxWidth(),
-                    painter = rememberAsyncImagePainter(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(it.imageUrl)
-                            .size(Size.ORIGINAL)
-                            .build(),
-                    ),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillWidth
-                )
-                Text(text = it.name)
-            }
+            HomeListItem(user = it)
         }
+    }
+}
+
+@Composable
+fun HomeListItem(
+    modifier: Modifier = Modifier,
+    user: User,
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        Image(
+            modifier = Modifier.fillMaxWidth(),
+            painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(user.imageUrl)
+                    .size(Size.ORIGINAL)
+                    .build(),
+            ),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth
+        )
+        Text(text = user.name)
     }
 }

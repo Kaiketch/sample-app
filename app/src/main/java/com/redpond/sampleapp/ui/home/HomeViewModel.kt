@@ -7,6 +7,7 @@ import com.redpond.sampleapp.domain.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,15 +26,23 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
 
+//    val uiState: StateFlow<UiState> =
+//        userRepository.getUsers(10, 0, "UTzPH0ckXUPqj4QTCiZG5SLZO52K1KNI", 2, 1).map {
+//            UiState.Success(it)
+//        }.stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.Lazily,
+//            initialValue = UiState.Loading
+//        )
+
     fun onStart() {
         viewModelScope.launch {
-            runCatching {
-                userRepository.getUsers(10, 0, "UTzPH0ckXUPqj4QTCiZG5SLZO52K1KNI", 2, 1)
-            }.onSuccess { users ->
-                _uiState.update { UiState.Success(users) }
-            }.onFailure {
-                _uiState.update { UiState.Error("Failed to fetch users") }
-            }
+            userRepository.getUsers(10, 0, "UTzPH0ckXUPqj4QTCiZG5SLZO52K1KNI", 2, 1)
+                .catch {
+                    _uiState.update { UiState.Error("An unexpected error occurred") }
+                }.collect { users ->
+                    _uiState.update { UiState.Success(users) }
+                }
         }
     }
 }
