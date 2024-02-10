@@ -86,6 +86,6 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
     testImplementation("io.mockk:mockk:1.13.9")
-
-
+    implementation("io.coil-kt:coil:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }
