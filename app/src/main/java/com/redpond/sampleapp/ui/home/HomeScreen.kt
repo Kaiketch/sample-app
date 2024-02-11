@@ -8,11 +8,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,6 +28,9 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -45,15 +55,21 @@ fun HomeScreen(
         }
     }
     HomeContent(
-        uiState = uiState
+        uiState = uiState,
+        onSortClick = viewModel::onLocalSortClick
     )
 }
 
 @Composable
 fun HomeContent(
-    uiState: HomeViewModel.UiState
+    uiState: HomeViewModel.UiState,
+    onSortClick: (HomeViewModel.LocalSortType) -> Unit
 ) {
-    Scaffold(topBar = { HomeTopBar() }) { paddingValue ->
+    Scaffold(topBar = {
+        HomeTopBar(
+            onSortClick = onSortClick
+        )
+    }) { paddingValue ->
         when (uiState) {
             is HomeViewModel.UiState.Loading -> {
                 HomeLoadingContent()
@@ -76,13 +92,30 @@ fun HomeContent(
 }
 
 @Composable
-fun HomeTopBar() {
+fun HomeTopBar(
+    onSortClick: (HomeViewModel.LocalSortType) -> Unit
+) {
+    var isExpanded by remember { mutableStateOf(false) }
     TopAppBar(colors = topAppBarColors(
         containerColor = MaterialTheme.colorScheme.primary,
         titleContentColor = MaterialTheme.colorScheme.onPrimary,
         navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
         actionIconContentColor = MaterialTheme.colorScheme.onSecondary
-    ), title = { Text(text = "Home") })
+    ), title = { Text(text = "Home") }, actions = {
+        IconButton(onClick = {
+            isExpanded = true
+        }) {
+            Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+            DropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
+                DropdownMenuItem(text = {
+                    Text(text = "Sort ASC")
+                }, onClick = { onSortClick(HomeViewModel.LocalSortType.ID_ASC) })
+                DropdownMenuItem(text = {
+                    Text(text = "Sort DESC")
+                }, onClick = { onSortClick(HomeViewModel.LocalSortType.ID_DESC) })
+            }
+        }
+    })
 }
 
 @Composable
@@ -127,7 +160,9 @@ fun HomeListItem(
         contentAlignment = Alignment.BottomEnd
     ) {
         Image(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp),
             painter = rememberAsyncImagePainter(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(user.imageUrl)
@@ -137,6 +172,6 @@ fun HomeListItem(
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )
-        Text(text = user.name)
+        Text(text = "${user.id} ${user.name}")
     }
 }
