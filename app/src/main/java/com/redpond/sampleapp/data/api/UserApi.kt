@@ -15,4 +15,13 @@ interface UserApi {
         @Query("condition_code") conditionCode: Int,
         @Query("sort_type") sortType: Int,
     ): UserDataResponse
+
+    @GET("/api/v2/members/details")
+    suspend fun fetchUserById(
+        @Query("member_id") memberId: Int,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int,
+        @Query("access_token") accessToken: String,
+        @Query("condition_code") conditionCode: Int,
+    ): UserDataResponse
 }

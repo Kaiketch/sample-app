@@ -29,4 +29,24 @@ class UserRepository @Inject constructor(
             ).memberData.map { it.toUser() })
         }
     }
+
+    fun getUserById(
+        id: Int,
+        limit: Int,
+        offset: Int,
+        accessToken: String,
+        conditionCode: Int,
+    ): Flow<User> {
+        return flow {
+            emit(
+                userApi.fetchUserById(
+                    id,
+                    limit,
+                    offset,
+                    accessToken,
+                    conditionCode,
+                ).memberData.first().toUser()
+            )
+        }
+    }
 }
