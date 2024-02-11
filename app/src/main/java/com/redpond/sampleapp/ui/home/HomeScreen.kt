@@ -162,7 +162,7 @@ fun HomeListItem(
         Image(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(160.dp),
+                .height(180.dp),
             painter = rememberAsyncImagePainter(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(user.imageUrl)
