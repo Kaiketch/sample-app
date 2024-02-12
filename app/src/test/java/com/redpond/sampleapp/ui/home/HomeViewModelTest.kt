@@ -37,11 +37,7 @@ class HomeViewModelTest {
             coEvery { getUsers(any(), any(), any(), any(), any()) } returns flow {
                 emit(
                     listOf(
-                        User(
-                            1,
-                            "name",
-                            "iconPath"
-                        )
+                        User.fakeUser
                     )
                 )
             }
@@ -63,7 +59,7 @@ class HomeViewModelTest {
             result[0]
         )
         assertEquals(
-            HomeViewModel.UiState.Success(listOf(User(1, "name", "iconPath"))),
+            HomeViewModel.UiState.Success(listOf(User.fakeUser)),
             result[1]
         )
     }

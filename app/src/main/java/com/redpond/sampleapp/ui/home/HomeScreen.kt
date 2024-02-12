@@ -43,6 +43,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.redpond.sampleapp.domain.model.User
 import com.redpond.sampleapp.ui.component.ObserveLifecycleEvent
+import com.redpond.sampleapp.util.formatToJpDateTime
 
 @Composable
 fun HomeScreen(
@@ -172,6 +173,10 @@ fun HomeListItem(
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )
-        Text(text = "${user.id} ${user.name}")
+        Text(
+            text = "${user.id} ${user.name} ${
+                user.created.formatToJpDateTime()
+            }"
+        )
     }
 }
