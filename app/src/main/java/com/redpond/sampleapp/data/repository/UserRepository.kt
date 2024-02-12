@@ -51,24 +51,17 @@ class UserRepository @Inject constructor(
     }
 
     suspend fun editUser(
-        accessToken: String,
-        memberName: String,
-        comment: String,
-        areaCode: Int,
-        experienceCode: Int,
-        styleCode1: Int,
-        styleCode2: Int,
-        styleCode3: Int,
+        user: User,
     ) {
         userApi.editUser(
-            accessToken,
-            memberName,
-            comment,
-            areaCode,
-            experienceCode,
-            styleCode1,
-            styleCode2,
-            styleCode3,
+            "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj",
+            if (user.validateName()) user.name else throw IllegalArgumentException("Name is too short"),
+            "",
+            1,
+            1,
+            1,
+            1,
+            1,
         )
     }
 }

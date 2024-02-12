@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,26 +37,21 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun onEditClick(
-        name: String,
-    ) {
+    fun onNameChange(name: String) {
+        (_uiState.value as? UiState.Success)?.let { success ->
+            _uiState.update { UiState.Success(success.user.copy(name = name)) }
+        }
+    }
+
+    fun onEditClick() {
         (_uiState.value as? UiState.Success)?.let {
             viewModelScope.launch {
                 runCatching {
-                    userRepository.editUser(
-                        "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj",
-                        name,
-                        "",
-                        1,
-                        1,
-                        1,
-                        1,
-                        1,
-                    )
+                    userRepository.editUser(it.user)
                 }.onSuccess {
 
                 }.onFailure {
-
+                    _uiState.update { UiState.Error("An unexpected error occurred") }
                 }
             }
         }

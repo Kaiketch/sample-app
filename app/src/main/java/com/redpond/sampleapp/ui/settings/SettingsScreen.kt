@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ fun SettingsScreen(
     val uiState by viewModel.uiState.collectAsState()
     SettingsContent(
         uiState = uiState,
+        onNameChange = viewModel::onNameChange,
         onEditClick = viewModel::onEditClick
     )
 }
@@ -26,7 +28,8 @@ fun SettingsScreen(
 @Composable
 fun SettingsContent(
     uiState: SettingsViewModel.UiState,
-    onEditClick: (String) -> Unit
+    onNameChange: (String) -> Unit,
+    onEditClick: () -> Unit
 ) {
     when (uiState) {
         is SettingsViewModel.UiState.Loading -> {
@@ -36,6 +39,7 @@ fun SettingsContent(
         is SettingsViewModel.UiState.Success -> {
             SettingsSuccessContent(
                 uiState = uiState,
+                onNameChange = onNameChange,
                 onEditClick = onEditClick
             )
         }
@@ -64,14 +68,17 @@ fun SettingsErrorContent(
 fun SettingsSuccessContent(
     modifier: Modifier = Modifier,
     uiState: SettingsViewModel.UiState.Success,
-    onEditClick: (String) -> Unit
+    onNameChange: (String) -> Unit,
+    onEditClick: () -> Unit
 ) {
     Column(
         modifier = modifier.padding(16.dp)
     ) {
         Text(text = "User: ${uiState.user.name}")
 
-        Button(onClick = { onEditClick("aws") }) {
+        TextField(value = uiState.user.name, onValueChange = onNameChange)
+
+        Button(onClick = { onEditClick() }) {
             Text(text = "Edit")
         }
     }
