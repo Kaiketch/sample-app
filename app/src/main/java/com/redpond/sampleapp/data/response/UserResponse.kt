@@ -13,12 +13,12 @@ data class UserResponse(
     val memberId: Int,
     val memberName: String,
     val iconPath: String,
-    val insertTime: String,
+    val insertTime: String?,
 )
 
 fun UserResponse.toUser() = User(
     id = memberId,
     name = memberName,
     imageUrl = iconPath,
-    created = insertTime.parseToYyyyMMddHHmm()
+    created = insertTime?.parseToYyyyMMddHHmm()
 )

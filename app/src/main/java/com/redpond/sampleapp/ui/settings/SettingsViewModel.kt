@@ -1,9 +1,12 @@
 package com.redpond.sampleapp.ui.settings
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.redpond.sampleapp.data.repository.UserRepository
 import com.redpond.sampleapp.domain.model.User
+import com.redpond.sampleapp.util.catchAppError
+import com.redpond.sampleapp.util.onAppFailure
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +32,8 @@ class SettingsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             userRepository.getUserById(75362, 10, 0, "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj", 2)
-                .catch {
+                .catchAppError {
+                    Log.e("SettingsViewModel", "An unexpected error occurred", it)
                     _uiState.value = UiState.Error("An unexpected error occurred")
                 }.collect { user ->
                     _uiState.value = UiState.Success(user)
@@ -50,8 +54,8 @@ class SettingsViewModel @Inject constructor(
                     userRepository.editUser(it.user)
                 }.onSuccess {
 
-                }.onFailure {
-                    _uiState.update { UiState.Error("An unexpected error occurred") }
+                }.onAppFailure { error ->
+                    _uiState.update { UiState.Error(error.message) }
                 }
             }
         }

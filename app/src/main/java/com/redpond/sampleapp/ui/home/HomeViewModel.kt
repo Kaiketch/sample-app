@@ -1,10 +1,13 @@
 package com.redpond.sampleapp.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.redpond.sampleapp.data.repository.UserRepository
 import com.redpond.sampleapp.domain.model.User
+import com.redpond.sampleapp.util.catchAppError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -38,7 +41,8 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             userRepository.getUsers(10, 0, "UTzPH0ckXUPqj4QTCiZG5SLZO52K1KNI", 2, 1)
-                .catch {
+                .catchAppError {
+                    Log.e("HomeViewModel", "An unexpected error occurred", it)
                     _uiState.update { UiState.Error("An unexpected error occurred") }
                 }.collect { users ->
                     _uiState.update { UiState.Success(users) }

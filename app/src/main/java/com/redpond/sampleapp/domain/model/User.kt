@@ -6,7 +6,7 @@ data class User(
     val id: Int,
     val name: String,
     val imageUrl: String,
-    val created: LocalDateTime,
+    val created: LocalDateTime?,
 ) {
     fun validateName(): Boolean {
         return name.length > 2

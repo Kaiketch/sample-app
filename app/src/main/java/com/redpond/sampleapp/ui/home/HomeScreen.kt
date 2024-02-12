@@ -175,7 +175,7 @@ fun HomeListItem(
         )
         Text(
             text = "${user.id} ${user.name} ${
-                user.created.formatToJpDateTime()
+                user.created?.formatToJpDateTime()
             }"
         )
     }
