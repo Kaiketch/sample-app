@@ -1,12 +1,15 @@
 package com.redpond.sampleapp.data.repository
 
 import com.redpond.sampleapp.data.api.UserApi
+import com.redpond.sampleapp.data.datastore.SettingsDataStore
+import com.redpond.sampleapp.data.response.UserDataResponse
 import com.redpond.sampleapp.data.response.toUser
 import com.redpond.sampleapp.domain.model.User
 import com.redpond.sampleapp.domain.repository.UserRepositoryInterface
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -20,9 +23,12 @@ import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val userApi: UserApi
+    private val userApi: UserApi,
+    private val settingsDataStore: SettingsDataStore,
 ) : UserRepositoryInterface {
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+
+    private var userDataResponse: UserDataResponse? = null
 
     override fun getUsers(
         limit: Int,
@@ -32,13 +38,19 @@ class UserRepository @Inject constructor(
         sortType: Int
     ): Flow<List<User>> {
         return flow {
-            emit(userApi.fetchUsers(
-                limit,
-                offset,
-                accessToken,
-                conditionCode,
-                sortType
-            ).memberData.map { it.toUser() })
+            val shouldUserCache = settingsDataStore.shouldUserCache.first()
+            val res = if (shouldUserCache && userDataResponse != null) {
+                userDataResponse
+            } else {
+                userApi.fetchUsers(
+                    limit,
+                    offset,
+                    accessToken,
+                    conditionCode,
+                    sortType
+                ).also { userDataResponse = it }
+            }
+            emit(res!!.memberData.map { it.toUser() })
         }.flowOn(dispatcher)
     }
 

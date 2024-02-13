@@ -88,4 +88,5 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.9")
     implementation("io.coil-kt:coil:2.5.0")
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }
