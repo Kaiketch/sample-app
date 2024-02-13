@@ -6,8 +6,8 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.redpond.sampleapp.data.repository.UserRepository
 import com.redpond.sampleapp.domain.model.User
+import com.redpond.sampleapp.domain.repository.UserRepositoryInterface
 import com.redpond.sampleapp.util.MediaManager
 import com.redpond.sampleapp.util.catchAppError
 import com.redpond.sampleapp.util.onAppFailure
@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userRepository: UserRepository,
+    private val userRepository: UserRepositoryInterface,
     private val mediaStoreManager: MediaManager,
 ) : ViewModel() {
     sealed class UiState {

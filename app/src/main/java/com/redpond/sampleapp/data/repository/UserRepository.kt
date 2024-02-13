@@ -3,8 +3,13 @@ package com.redpond.sampleapp.data.repository
 import com.redpond.sampleapp.data.api.UserApi
 import com.redpond.sampleapp.data.response.toUser
 import com.redpond.sampleapp.domain.model.User
+import com.redpond.sampleapp.domain.repository.UserRepositoryInterface
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -16,8 +21,10 @@ import javax.inject.Singleton
 @Singleton
 class UserRepository @Inject constructor(
     private val userApi: UserApi
-) {
-    fun getUsers(
+) : UserRepositoryInterface {
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+
+    override fun getUsers(
         limit: Int,
         offset: Int,
         accessToken: String,
@@ -32,10 +39,10 @@ class UserRepository @Inject constructor(
                 conditionCode,
                 sortType
             ).memberData.map { it.toUser() })
-        }
+        }.flowOn(dispatcher)
     }
 
-    fun getUserById(
+    override fun getUserById(
         id: Int,
         limit: Int,
         offset: Int,
@@ -52,25 +59,27 @@ class UserRepository @Inject constructor(
                     conditionCode,
                 ).memberData.first().toUser()
             )
+        }.flowOn(dispatcher)
+    }
+
+    override suspend fun editUser(
+        user: User,
+    ) {
+        withContext(dispatcher) {
+            userApi.editUser(
+                "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj",
+                if (user.validateName()) user.name else throw IllegalArgumentException("Name is too short"),
+                "",
+                1,
+                1,
+                1,
+                1,
+                1,
+            )
         }
     }
 
-    suspend fun editUser(
-        user: User,
-    ) {
-        userApi.editUser(
-            "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj",
-            if (user.validateName()) user.name else throw IllegalArgumentException("Name is too short"),
-            "",
-            1,
-            1,
-            1,
-            1,
-            1,
-        )
-    }
-
-    suspend fun editUserImage(
+    override suspend fun editUserImage(
         file: File,
     ) {
         val reqBody1 =
@@ -78,9 +87,11 @@ class UserRepository @Inject constructor(
         val part1 = MultipartBody.Part.createFormData("access_token", null, reqBody1)
         val reqBody2 = file.asRequestBody("image/*".toMediaTypeOrNull())
         val part2 = MultipartBody.Part.createFormData("image", file.name, reqBody2)
-        userApi.editUserImage(
-            part1,
-            part2,
-        )
+        withContext(dispatcher) {
+            userApi.editUserImage(
+                part1,
+                part2,
+            )
+        }
     }
 }

@@ -3,21 +3,19 @@ package com.redpond.sampleapp.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.redpond.sampleapp.data.repository.UserRepository
 import com.redpond.sampleapp.domain.model.User
+import com.redpond.sampleapp.domain.repository.UserRepositoryInterface
 import com.redpond.sampleapp.util.catchAppError
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepositoryInterface
 ) : ViewModel() {
 
     sealed class UiState {

@@ -3,8 +3,8 @@ package com.redpond.sampleapp.ui.settings
 import android.app.Activity
 import android.net.Uri
 import androidx.activity.result.ActivityResult
-import com.redpond.sampleapp.data.repository.UserRepository
 import com.redpond.sampleapp.domain.model.User
+import com.redpond.sampleapp.domain.repository.UserRepositoryInterface
 import com.redpond.sampleapp.util.MediaManager
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -35,7 +35,7 @@ class SettingsViewModelTest {
 
     @Test
     fun onActivityResult_shouldCallUpdateImage() {
-        val userRepository = mockk<UserRepository> {
+        val userRepository = mockk<UserRepositoryInterface> {
             coEvery { getUserById(any(), any(), any(), any(), any()) } returns flowOf(User.fakeUser)
             coEvery { editUserImage(any()) } returns Unit
         }
