@@ -41,7 +41,7 @@ class SettingsViewModel @Inject constructor(
             userRepository.getUserById(75362, 10, 0, "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj", 2)
                 .catchAppError {
                     Log.e("SettingsViewModel", "An unexpected error occurred", it)
-                    _uiState.value = UiState.Error("An unexpected error occurred")
+                    _uiState.update { UiState.Error("An unexpected error occurred") }
                 }.collect { user ->
                     _uiState.value = UiState.Success(user)
                 }
