@@ -64,4 +64,56 @@ class HomeViewModelTest {
         Truth.assertThat(viewModel.uiState.value)
             .isEqualTo(HomeViewModel.UiState.Error("An unexpected error occurred"))
     }
+
+    @Test
+    fun onLocalSortClick_should_set_users_by_id_asc() = runTest {
+        // Given
+        val userRepository = mockk<UserRepository> {
+            coEvery { getUsers(any(), any(), any(), any(), any()) } returns flowOf(
+                listOf(
+                    User.fakeUser.copy(id = 2),
+                    User.fakeUser.copy(id = 1)
+                )
+            )
+        }
+        val viewModel = HomeViewModel(userRepository)
+
+        // When
+        viewModel.onLocalSortClick(HomeViewModel.LocalSortType.ID_ASC)
+
+        // Then
+        Truth.assertThat(viewModel.uiState.value)
+            .isEqualTo(HomeViewModel.UiState.Success(
+                listOf(
+                    User.fakeUser.copy(id = 1),
+                    User.fakeUser.copy(id = 2)
+                )
+            ))
+    }
+
+    @Test
+    fun onLocalSortClick_should_set_users_by_id_desc() = runTest {
+        // Given
+        val userRepository = mockk<UserRepository> {
+            coEvery { getUsers(any(), any(), any(), any(), any()) } returns flowOf(
+                listOf(
+                    User.fakeUser.copy(id = 1),
+                    User.fakeUser.copy(id = 2)
+                )
+            )
+        }
+        val viewModel = HomeViewModel(userRepository)
+
+        // When
+        viewModel.onLocalSortClick(HomeViewModel.LocalSortType.ID_DESC)
+
+        // Then
+        Truth.assertThat(viewModel.uiState.value)
+            .isEqualTo(HomeViewModel.UiState.Success(
+                listOf(
+                    User.fakeUser.copy(id = 2),
+                    User.fakeUser.copy(id = 1)
+                )
+            ))
+    }
 }
