@@ -26,7 +26,7 @@ class UserRepository @Inject constructor(
     private val userApi: UserApi,
     private val settingsDataStore: SettingsDataStore,
 ) : UserRepositoryInterface {
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    var dispatcher: CoroutineDispatcher = Dispatchers.IO
 
     private var userDataResponse: UserDataResponse? = null
 
@@ -77,10 +77,11 @@ class UserRepository @Inject constructor(
     override suspend fun editUser(
         user: User,
     ) {
+        user.validate()
         withContext(dispatcher) {
             userApi.editUser(
                 "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj",
-                if (user.validateName()) user.name else throw IllegalArgumentException("Name is too short"),
+                user.name,
                 "",
                 1,
                 1,

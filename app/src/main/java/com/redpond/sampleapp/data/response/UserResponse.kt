@@ -14,7 +14,16 @@ data class UserResponse(
     val memberName: String,
     val iconPath: String,
     val insertTime: String?,
-)
+) {
+    companion object {
+        val fakeUserResponse = UserResponse(
+            memberId = 1,
+            memberName = "fake",
+            iconPath = "fake",
+            insertTime = "2021-01-01 00:00:00"
+        )
+    }
+}
 
 fun UserResponse.toUser() = User(
     id = memberId,

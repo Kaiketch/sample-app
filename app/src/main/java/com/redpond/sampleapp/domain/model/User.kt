@@ -8,8 +8,10 @@ data class User(
     val imageUrl: String,
     val created: LocalDateTime?,
 ) {
-    fun validateName(): Boolean {
-        return name.length > 2
+    fun validate() {
+        if(name.length < 3) {
+            throw IllegalStateException("Name is too short")
+        }
     }
 
     companion object {

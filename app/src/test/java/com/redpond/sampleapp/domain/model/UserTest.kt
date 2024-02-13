@@ -5,14 +5,18 @@ import org.junit.Test
 class UserTest {
 
     @Test
-    fun validateName() {
-        val user = User.fakeUser.copy(name = "name")
-        assert(user.validateName())
+    fun validate() {
+        val user = User.fakeUser.copy(name = "valid name")
+        user.validate()
     }
 
     @Test
-    fun validateName_short() {
+    fun validate_throw_exception_if_invalid_name() {
         val user = User.fakeUser.copy(name = "na")
-        assert(!user.validateName())
+        try {
+            user.validate()
+        } catch (e: IllegalStateException) {
+            assert(e.message == "Name is too short")
+        }
     }
 }
