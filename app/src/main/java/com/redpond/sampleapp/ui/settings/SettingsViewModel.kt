@@ -77,12 +77,18 @@ class SettingsViewModel @Inject constructor(
     fun onActivityResult(result: ActivityResult) {
         if (result.resultCode == android.app.Activity.RESULT_OK) {
             val uri = result.data?.data ?: return
-
             val bitmap = mediaStoreManager.decodeToBitmap(uri)
             val sdf = SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.US)
             val fileName = sdf.format(Date()) + ".jpg"
             val tempFile = mediaStoreManager.createTempFile(fileName)
             mediaStoreManager.writeBitmapToFile(tempFile, bitmap)
+
+            viewModelScope.launch {
+                runCatching { userRepository.editUserImage(tempFile) }.onSuccess { }
+                    .onAppFailure { error ->
+                        _uiState.update { UiState.Error(error.message) }
+                    }
+            }
         }
     }
 }

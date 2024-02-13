@@ -5,6 +5,10 @@ import com.redpond.sampleapp.data.response.toUser
 import com.redpond.sampleapp.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -69,9 +73,14 @@ class UserRepository @Inject constructor(
     suspend fun editUserImage(
         file: File,
     ) {
+        val reqBody1 =
+            "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj".toRequestBody("text/*".toMediaTypeOrNull())
+        val part1 = MultipartBody.Part.createFormData("access_token", null, reqBody1)
+        val reqBody2 = file.asRequestBody("image/*".toMediaTypeOrNull())
+        val part2 = MultipartBody.Part.createFormData("image", file.name, reqBody2)
         userApi.editUserImage(
-            "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj",
-            file,
+            part1,
+            part2,
         )
     }
 }
