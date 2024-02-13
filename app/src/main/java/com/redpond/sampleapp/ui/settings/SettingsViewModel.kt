@@ -1,23 +1,30 @@
 package com.redpond.sampleapp.ui.settings
 
+import android.content.Intent
 import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.redpond.sampleapp.data.repository.UserRepository
 import com.redpond.sampleapp.domain.model.User
+import com.redpond.sampleapp.util.MediaManager
 import com.redpond.sampleapp.util.catchAppError
 import com.redpond.sampleapp.util.onAppFailure
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val mediaStoreManager: MediaManager,
 ) : ViewModel() {
     sealed class UiState {
         data object Loading : UiState()
@@ -58,6 +65,24 @@ class SettingsViewModel @Inject constructor(
                     _uiState.update { UiState.Error(error.message) }
                 }
             }
+        }
+    }
+
+    fun onUploadImageClick(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
+        launcher.launch(Intent(Intent.ACTION_PICK).apply {
+            type = "image/*"
+        })
+    }
+
+    fun onActivityResult(result: ActivityResult) {
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val uri = result.data?.data ?: return
+
+            val bitmap = mediaStoreManager.decodeToBitmap(uri)
+            val sdf = SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.US)
+            val fileName = sdf.format(Date()) + ".jpg"
+            val tempFile = mediaStoreManager.createTempFile(fileName)
+            mediaStoreManager.writeBitmapToFile(tempFile, bitmap)
         }
     }
 }

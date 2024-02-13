@@ -5,6 +5,7 @@ import com.redpond.sampleapp.data.response.toUser
 import com.redpond.sampleapp.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -62,6 +63,15 @@ class UserRepository @Inject constructor(
             1,
             1,
             1,
+        )
+    }
+
+    suspend fun editUserImage(
+        file: File,
+    ) {
+        userApi.editUserImage(
+            "mvQgHGMTJvMbFZkO3KnXOV2okgzYsPQj",
+            file,
         )
     }
 }

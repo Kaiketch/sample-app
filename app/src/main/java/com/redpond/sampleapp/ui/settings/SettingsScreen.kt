@@ -1,5 +1,7 @@
 package com.redpond.sampleapp.ui.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,11 +23,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
+    val activityResultLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            viewModel.onActivityResult(result)
+        }
+
     val uiState by viewModel.uiState.collectAsState()
     SettingsContent(
         uiState = uiState,
         onNameChange = viewModel::onNameChange,
-        onEditClick = viewModel::onEditClick
+        onEditClick = viewModel::onEditClick,
+        onUploadImageClick = { viewModel.onUploadImageClick(activityResultLauncher) }
     )
 }
 
@@ -33,7 +41,8 @@ fun SettingsScreen(
 fun SettingsContent(
     uiState: SettingsViewModel.UiState,
     onNameChange: (String) -> Unit,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    onUploadImageClick: () -> Unit
 ) {
     when (uiState) {
         is SettingsViewModel.UiState.Loading -> {
@@ -44,7 +53,8 @@ fun SettingsContent(
             SettingsSuccessContent(
                 uiState = uiState,
                 onNameChange = onNameChange,
-                onEditClick = onEditClick
+                onEditClick = onEditClick,
+                onUploadImageClick = onUploadImageClick
             )
         }
 
@@ -77,7 +87,8 @@ fun SettingsSuccessContent(
     modifier: Modifier = Modifier,
     uiState: SettingsViewModel.UiState.Success,
     onNameChange: (String) -> Unit,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    onUploadImageClick: () -> Unit
 ) {
     Column(
         modifier = modifier.padding(16.dp)
@@ -88,6 +99,9 @@ fun SettingsSuccessContent(
 
         Button(onClick = { onEditClick() }) {
             Text(text = "Edit")
+        }
+        Button(onClick = { onUploadImageClick() }) {
+            Text(text = "Upload")
         }
     }
 }
