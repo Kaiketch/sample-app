@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
@@ -97,26 +98,30 @@ fun HomeTopBar(
     onSortClick: (HomeViewModel.LocalSortType) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    TopAppBar(colors = topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        titleContentColor = MaterialTheme.colorScheme.onPrimary,
-        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        actionIconContentColor = MaterialTheme.colorScheme.onSecondary
-    ), title = { Text(text = "Home") }, actions = {
-        IconButton(onClick = {
-            isExpanded = true
-        }) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = null)
-            DropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
-                DropdownMenuItem(text = {
-                    Text(text = "Sort ASC")
-                }, onClick = { onSortClick(HomeViewModel.LocalSortType.ID_ASC) })
-                DropdownMenuItem(text = {
-                    Text(text = "Sort DESC")
-                }, onClick = { onSortClick(HomeViewModel.LocalSortType.ID_DESC) })
+    TopAppBar(
+        colors = topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onSecondary
+        ),
+        title = { Text(text = "Home") },
+        actions = {
+            IconButton(
+                onClick = {
+                isExpanded = true
+            }) {
+                Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                DropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
+                    DropdownMenuItem(text = {
+                        Text(text = "Sort ASC")
+                    }, onClick = { onSortClick(HomeViewModel.LocalSortType.ID_ASC) })
+                    DropdownMenuItem(text = {
+                        Text(text = "Sort DESC")
+                    }, onClick = { onSortClick(HomeViewModel.LocalSortType.ID_DESC) })
+                }
             }
-        }
-    })
+        })
 }
 
 @Composable
@@ -140,10 +145,12 @@ fun HomeSuccessContent(
     modifier: Modifier = Modifier,
     uiState: HomeViewModel.UiState.Success
 ) {
+    val state = rememberLazyListState()
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        state = state
     ) {
         items(uiState.users) {
             HomeListItem(user = it)
